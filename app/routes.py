@@ -1,4 +1,5 @@
-from flask import render_template
+from flask import render_template, flash
+from werkzeug.utils import redirect
 
 from app import app
 from app.forms import LoginForm
@@ -21,7 +22,13 @@ def index():
     return render_template('index.html', title='Home', user=user, posts=posts)
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    return render_template('login.html', form=form)
+    if form.validate_on_submit():
+        flash('Login requested for user {}, remember_me={}'.format(
+            form.username.data, form.remember_me.data))
+        return redirect('/index')
+
+    # 这是因为表单的字段对象的在渲染时会自动转化为HTML元素。
+    return render_template('login.html', title='登录', form=form)
