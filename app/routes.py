@@ -1,5 +1,6 @@
-from flask import render_template, flash, url_for
+from flask import render_template, flash, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
+from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app
@@ -57,7 +58,11 @@ def login():
         # flask-login 插件方法 登入用户
         # 该函数会将用户登录状态注册为已登录，这意味着用户导航到任何未来的页面时，应用都会将用户实例赋值给current_user变量。
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('index'))
+        next_page = request.args.get('next')
+        if not next_page or url_parse(next_page).netloc != '':
+            next_page = url_for('index')
+        return redirect(next_page)
+
     return render_template('login.html', title='登录', form=form)
 
 
