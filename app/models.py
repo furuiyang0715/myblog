@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from app import db
 
 
@@ -13,6 +16,12 @@ class User(db.Model):
     lazy参数定义了这种关系调用的数据库查询是如何执行的。
     '''
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
@@ -75,6 +84,16 @@ db.session.commit()
 '''关于 flask shell 
 flask shell命令是flask命令集中的另一个非常有用的工具。 shell命令是Flask在继run之后的实现第二个“核心”命令。 这个命令的目的是在应用的上下文中启动一个Python解释器。 
 
+'''
 
+'''关于用户hash
+from werkzeug.security import generate_password_hash
+hash = generate_password_hash('foobar') 
+
+from werkzeug.security import check_password_hash
+check_password_hash(hash, 'foobar')
+check_password_hash(hash, 'barfoo') 
+
+check_password_hash(hash, generate_password_hash('foobar'))  
 
 '''
