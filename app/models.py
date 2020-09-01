@@ -57,4 +57,17 @@ for post in posts:
 User.query.order_by(User.username.desc()).all() 
 
 
+## 删除测试数据 
+users = User.query.all()
+for u in users:
+    db.session.delete(u)
+
+posts = Post.query.all()
+for p in posts:
+    db.session.delete(p)
+db.session.commit() 
+
+
+
+# *.db-journal 则是为了让数据库能够支持事务而产生的临时日志文件，通常情况下这 个文件的大小都是 0 字节。 
 '''
