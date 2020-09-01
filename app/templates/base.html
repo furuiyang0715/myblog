@@ -1,15 +1,15 @@
 <html>
     <head>
       {% if title %}
-      <title>{{ title }} - Microblog</title>
+      <title>{{ title }} - 我的微博</title>
       {% else %}
-      <title>Welcome to Microblog</title>
+      <title>欢迎来到我的微博</title>
       {% endif %}
     </head>
 
     <body>
         <div>
-            Microblog:
+            我的微博:
             <a href="{{ url_for('index') }}">主页</a>
             <a href="{{ url_for('login') }}">登录</a>
             <a href="{{ url_for('logout') }}">退出</a>
