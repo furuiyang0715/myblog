@@ -7,28 +7,15 @@ from werkzeug.utils import redirect
 
 from app import app, db
 from app.forms import LoginForm, RegistrationForm
-from app.models import User
+from app.models import User, Post
 
 
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
-    # user = {'username': 'Miguel'}
-    # posts = [
-    #     {
-    #         'author': {'username': 'John'},
-    #         'body': 'Beautiful day in Portland!'
-    #     },
-    #     {
-    #         'author': {'username': 'Susan'},
-    #         'body': 'The Avengers movie was so cool!'
-    #     }
-    # ]
-    return render_template('index.html', title='Home',
-                           # user=user,
-                           # posts=posts,
-                           )
+    posts = Post.query.all()
+    return render_template('index.html', title='Home', posts=posts)
 
 
 # @app.route('/login', methods=['GET', 'POST'])
