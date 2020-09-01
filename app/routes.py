@@ -93,12 +93,13 @@ def register():
         username = form.username.data
         email = form.email.data
         password = form.password.data
-        user = User()
-        user.username = username
-        user.email = email
+        user = User(username=username, email=email)
+        # user.username = username
+        # user.email = email
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
+        flash('恭喜你 注册成功')
         return redirect(url_for("login"))
 
     return render_template('register.html', title='注册', form=form)
