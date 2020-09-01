@@ -46,6 +46,15 @@ u.posts.all()
 db.session.add(p)
 db.session.commit() 
 
+posts = Post.query.all() 
+for post in posts: 
+    print(post.id) 
+    print(post.body) 
+    print(post.timestamp) 
+    print(post.user_id) 
+    
+## ??? 
+User.query.order_by(User.username.desc()).all() 
 
 
 '''
