@@ -1,11 +1,12 @@
 from datetime import datetime
 
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
@@ -96,4 +97,25 @@ check_password_hash(hash, 'barfoo')
 
 check_password_hash(hash, generate_password_hash('foobar'))  
 
+'''
+
+'''关于用户登录 
+(1) 安装： pip install flask-login
+(2) 插件化处理 app 对象: 
+from flask_login import LoginManager
+app = Flask(__name__)
+# ...
+login = LoginManager(app) 
+(3) 为 flask-login 准备用户模型 
+Flask-Login插件需要在用户模型上实现某些属性和方法。这种做法很棒，因为只要将这些必需项添加到模型中，Flask-Login就没有其他依赖了，它就可以与基于任何数据库系统的用户模型一起工作。
+必须的四项如下：
+is_authenticated: 一个用来表示用户是否通过登录认证的属性，用True和False表示。
+is_active: 如果用户账户是活跃的，那么这个属性是True，否则就是False（译者注：活跃用户的定义是该用户的登录状态是否通过用户名密码登录，通过“记住我”功能保持登录状态的用户是非活跃的）。
+is_anonymous: 常规用户的该属性是False，对特定的匿名用户是True。
+get_id(): 返回用户的唯一id的方法，返回值类型是字符串(Python 2下返回unicode字符串). 
+我可以很容易地实现这四个属性或方法，但是由于它们是相当通用的，因此Flask-Login提供了一个叫做UserMixin的mixin类来将它们归纳其中。 下面演示了如何将mixin类添加到模型中： 
+
+from flask_login import UserMixin
+class User(UserMixin, db.Model):
+    # ... 
 '''
