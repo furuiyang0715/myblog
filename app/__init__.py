@@ -20,6 +20,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 login = LoginManager(app)
+# 强制用户登录 跳转页面
+login.login_view = 'login'
 
 
 # 这样写是为了解决循环引用的问题
