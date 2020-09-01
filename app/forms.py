@@ -15,7 +15,8 @@ class LoginForm(FlaskForm):
 class RegistrationForm(FlaskForm):
     username = StringField('用户名', validators=[DataRequired()])
     # Email， 这个来自WTForms的另一个验证器将确保用户在此字段中键入的内容与电子邮件地址的结构相匹配。
-    email = StringField('邮箱', validators=[DataRequired(), Email()])
+    # email = StringField('邮箱', validators=[DataRequired(), Email()])
+    email = StringField('邮箱', validators=[DataRequired()])
     password = PasswordField('密码', validators=[DataRequired()])
     # EqualTo 的验证器，它将确保其值与第一个password字段的值相同。
     password2 = PasswordField('确认密码', validators=[DataRequired(), EqualTo('password')])

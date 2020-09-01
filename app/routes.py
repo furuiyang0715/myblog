@@ -1,3 +1,4 @@
+import os
 import pprint
 
 from flask import render_template, flash, url_for, request
@@ -9,6 +10,7 @@ from app import app, db
 from app.forms import LoginForm, RegistrationForm
 from app.models import User, Post
 
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 @app.route('/')
 @app.route('/index')
@@ -101,3 +103,15 @@ def user(username):
         {'author': user, 'body': 'Test post #2'}
     ]
     return render_template('user.html', user=user, posts=posts)
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == "POST":
+        print("post")
+        file = request.files.get('file')
+        file_path = os.path.join(basedir, "static/photos/{}".format(file.filename))
+        file.save(file_path)
+        return "保存成功"
+    else:
+        return render_template('upload.html')
