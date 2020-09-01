@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db
+from app import db, login
 
 
 class User(UserMixin, db.Model):
@@ -36,6 +36,17 @@ class Post(db.Model):
 
     def __repr__(self):
         return '<Post {}>'.format(self.body)
+
+
+@login.user_loader
+def load_user(id):
+    '''
+    用户会话是Flask分配给每个连接到应用的用户的存储空间，Flask-Login通过在用户会话中存储其唯一标识符来跟踪登录用户。
+    每当已登录的用户导航到新页面时，Flask-Login将从会话中检索用户的ID，然后将该用户实例加载到内存中.
+    因为数据库对Flask-Login透明，所以需要应用来辅助加载用户。 基于此，插件期望应用配置一个用户加载函数，
+    可以调用该函数来加载给定ID的用户。 该功能可以添加到app/models.py模块中：
+    '''
+    return User.query.get(int(id))
 
 
 '''开启交互测试 
