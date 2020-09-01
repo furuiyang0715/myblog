@@ -6,7 +6,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app
-from app.forms import LoginForm
+from app.forms import LoginForm, RegistrationForm
 from app.models import User
 
 
@@ -83,3 +83,9 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+
+@app.route('/register')
+def register():
+    form = RegistrationForm()
+    return render_template('register.html', title='注册', form=form)

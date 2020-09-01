@@ -19,7 +19,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('密码', validators=[DataRequired()])
     # EqualTo 的验证器，它将确保其值与第一个password字段的值相同。
     password2 = PasswordField('确认密码', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Register')
+    submit = SubmitField('注册')
 
     def validate_username(self, username):
         # 则通过ValidationError触发验证错误。 异常中作为参数的消息将会在对应字段旁边显示，以供用户查看。
