@@ -1,4 +1,7 @@
 from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+
 from config import Config
 
 
@@ -9,6 +12,11 @@ app = Flask(__name__)
 # app.config['SECRET_KEY'] = 'you-will-never-guess'
 # 使用类的方式为 app 增加配置项
 app.config.from_object(Config)
+# flask 采用插件化的模式
+# 数据库的实例
+db = SQLAlchemy(app)
+# 数据库迁移引擎 将两者结合起来
+migrate = Migrate(app, db)
 
 
 # 这样写是为了解决循环引用的问题
