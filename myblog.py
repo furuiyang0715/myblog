@@ -1,4 +1,11 @@
-from app import app
+from app import app, db
+from app.models import User, Post
+
+
+@app.shell_context_processor
+def make_shell_context():
+    """创建 flask shell 的上下文变量"""
+    return {'db': db, 'User': User, 'Post': Post}
 
 
 if __name__ == '__main__':

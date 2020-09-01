@@ -71,3 +71,10 @@ db.session.commit()
 
 # *.db-journal 则是为了让数据库能够支持事务而产生的临时日志文件，通常情况下这 个文件的大小都是 0 字节。 
 '''
+
+'''关于 flask shell 
+flask shell命令是flask命令集中的另一个非常有用的工具。 shell命令是Flask在继run之后的实现第二个“核心”命令。 这个命令的目的是在应用的上下文中启动一个Python解释器。 
+
+
+
+'''
