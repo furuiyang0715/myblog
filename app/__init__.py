@@ -20,4 +20,4 @@ migrate = Migrate(app, db)
 
 
 # 这样写是为了解决循环引用的问题
-from app import routes
+from app import routes, models
