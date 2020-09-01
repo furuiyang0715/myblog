@@ -130,3 +130,11 @@ from flask_login import UserMixin
 class User(UserMixin, db.Model):
     # ... 
 '''
+
+'''生成用户头像: 
+from hashlib import md5
+url = 'https://www.gravatar.com/avatar/' + md5(b'ruiyang0715@gmail.com').hexdigest()
+print(url) 
+
+
+'''
