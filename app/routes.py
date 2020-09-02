@@ -12,25 +12,13 @@ from app.models import User, Post
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+
 @app.route('/')
 @app.route('/index')
 @login_required
 def index():
     posts = Post.query.all()
     return render_template('index.html', title='Home', posts=posts)
-
-
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         flash('Login requested for user {}, remember_me={}'.format(
-#             form.username.data, form.remember_me.data))
-#         # url_for()的参数是endpoint名称，也就是视图函数的名字。
-#         return redirect(url_for("index"))
-#
-#     # 这是因为表单的字段对象的在渲染时会自动转化为HTML元素。
-#     return render_template('login.html', title='登录', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -53,9 +41,6 @@ def login():
         # 该函数会将用户登录状态注册为已登录，这意味着用户导航到任何未来的页面时，应用都会将用户实例赋值给current_user变量。
         login_user(user, remember=form.remember_me.data)
         # 特别是request.args属性，可用友好的字典格式暴露查询字符串的内容。
-
-        print(pprint.pformat(request.args))
-
         next_page = request.args.get('next')
         # 因此应用仅在重定向URL是相对路径时才执行重定向，这可确保重定向与应用保持在同一站点中。
         # 为了确定URL是相对的还是绝对的，我使用Werkzeug的url_parse()函数解析，然后检查netloc属性是否被设置。
@@ -98,11 +83,7 @@ def register():
 @login_required
 def user(username):
     user = User.query.filter_by(username=username).first_or_404()
-    posts = [
-        {'author': user, 'body': 'Test post #1'},
-        {'author': user, 'body': 'Test post #2'}
-    ]
-    return render_template('user.html', user=user, posts=posts)
+    return render_template('user.html', user=user)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
