@@ -129,15 +129,19 @@ def edit_profile():
         # 校验修改的用户名是否已经存在 且 与当前用户名不重复
         if username != current_user.username and User.query.filter_by(username=username).first():
             flash("该用户名已存在")
+            # post 请求失败时重新导向 get 页面
+            return render_template('edit_profile.html', title='编辑个人资料', form=form)
         else:
             current_user.username = username
             current_user.about_me = about_me
             db.session.add(current_user)
             db.session.commit()
             flash('您已成功修改个人资料')
+            # 成功修改 导向用户主页
             return redirect(url_for("user", username=username))
 
-    # get 请求时显示默认的用户名和简介
-    form.username.data = current_user.username
-    form.about_me.data = current_user.about_me
-    return render_template('edit_profile.html', form=form)
+    elif request.method == "GET":
+        # 初次 get 请求时显示默认的用户名和简介
+        form.username.data = current_user.username
+        form.about_me.data = current_user.about_me
+        return render_template('edit_profile.html',  title='编辑个人资料', form=form)
