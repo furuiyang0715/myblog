@@ -7,7 +7,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm
 from app.models import User, Post
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -115,3 +115,24 @@ def upload():
         return "保存成功"
     else:
         return render_template('upload.html')
+
+
+@app.route('/edit_profile', methods=['GET', 'POST'])
+@login_required
+def edit_profile():
+    form = EditProfileForm()
+    if form.validate_on_submit():
+        # form 通过检验 说明是 post 请求
+        username = form.username.data
+        about_me = form.about_me.data
+
+        # 校验修改的用户名是否已经存在 且 与当前用户名不重复
+        if username != current_user.username and User.query.filter_by(username=username).first():
+            flash("该用户名已存在")
+        else:
+            current_user.username = username
+            current_user.about_me = about_me
+            db.session.add(current_user)
+            db.session.commit()
+            return redirect(url_for("user", username=username))
+    return render_template('edit_profile.html', form=form)

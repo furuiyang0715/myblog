@@ -14,6 +14,8 @@ def make_shell_context():
 @app.before_request
 def before_request():
     if current_user.is_authenticated:
+        # 我之前提到过，应用应该以一致的时间单位工作，标准做法是使用UTC时区，使用系统的本地时间不是一个好主意，
+        # 因为如果那么的话，数据库中存储的时间取决于你的时区。
         current_user.last_seen = datetime.utcnow()
         db.session.commit()
 
