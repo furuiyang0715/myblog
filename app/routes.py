@@ -134,5 +134,10 @@ def edit_profile():
             current_user.about_me = about_me
             db.session.add(current_user)
             db.session.commit()
+            flash('您已成功修改个人资料')
             return redirect(url_for("user", username=username))
+
+    # get 请求时显示默认的用户名和简介
+    form.username.data = current_user.username
+    form.about_me.data = current_user.about_me
     return render_template('edit_profile.html', form=form)
