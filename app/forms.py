@@ -34,8 +34,25 @@ class RegistrationForm(FlaskForm):
             raise ValidationError('Please use a different email address.')
 
 
+# class EditProfileForm(FlaskForm):
+#     """个人信息编辑表单"""
+#     username = StringField('用户名', validators=[DataRequired()])
+#     about_me = TextAreaField('个人简介', validators=[Length(min=0, max=140)])
+#     submit = SubmitField('提交')
+
+
 class EditProfileForm(FlaskForm):
-    """个人信息编辑表单"""
-    username = StringField('用户名', validators=[DataRequired()])
-    about_me = TextAreaField('个人简介', validators=[Length(min=0, max=140)])
-    submit = SubmitField('提交')
+    username = StringField('Username', validators=[DataRequired()])
+    about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
+    submit = SubmitField('Submit')
+
+    def __init__(self, original_username, *args, **kwargs):
+        super(EditProfileForm, self).__init__(*args, **kwargs)
+        # 用原始的用户名为 form 实例赋予一个新的属性
+        self.original_username = original_username
+
+    def validate_username(self, username):
+        if username.data != self.original_username:
+            user = User.query.filter_by(username=self.username.data).first()
+            if user is not None:
+                raise ValidationError('此用户名已经存在 ~~')
