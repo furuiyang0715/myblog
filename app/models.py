@@ -18,6 +18,10 @@ class User(UserMixin, db.Model):
     lazy参数定义了这种关系调用的数据库查询是如何执行的。
     '''
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    # 用户的一段自我介绍
+    about_me = db.Column(db.String(140))
+    # 用户上一次访问该网站的时间
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
