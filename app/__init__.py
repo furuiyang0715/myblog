@@ -25,4 +25,4 @@ login.login_view = 'login'
 
 
 # 这样写是为了解决循环引用的问题
-from app import routes, models
+from app import routes, models, errors
