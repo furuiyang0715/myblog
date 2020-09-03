@@ -32,10 +32,25 @@ class User(UserMixin, db.Model):
 
     followed = db.relationship(
         'User',
-        secondary=followers,
-        primaryjoin=(followers.c.follower_id == id),
-        secondaryjoin=(followers.c.followed_id == id),
+        secondary=followers,     # 指定了用于该关系的关联表
+        primaryjoin=(followers.c.follower_id == id),    # 通过关联表关联到左侧实体的条件
+        secondaryjoin=(followers.c.followed_id == id),  # 通过关联表关联到右侧实体的条件
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
+
+    '''
+    建立关系的过程实属不易。 就像我为post一对多关系所做的那样，我使用db.relationship函数来定义模型类中的关系。 
+    这种关系将User实例关联到其他User实例，所以按照惯例，对于通过这种关系关联的一对用户来说，左侧用户关注右侧用户。 
+    我在左侧的用户中定义了followed的关系，因为当我从左侧查询这个关系时，我将得到已关注的用户列表（即右侧的列表）。 
+    
+    让我们逐个检查这个db.relationship()所有的参数：'User'是关系当中的右侧实体（将左侧实体看成是上级类）。由于这是自引用关系，所以我不得不在两侧都使用同一个实体。
+    secondary 指定了用于该关系的关联表，就是使用我在上面定义的followers。
+    primaryjoin 指明了通过关系表关联到左侧实体（关注者）的条件 。关系中的左侧的join条件是关系表中的follower_id字段与这个关注者的用户ID匹配。
+    followers.c.follower_id表达式引用了该关系表中的follower_id列。
+    secondaryjoin 指明了通过关系表关联到右侧实体（被关注者）的条件 。 这个条件与primaryjoin类似，唯一的区别在于，现在我使用关系表的字段的是followed_id了。
+    backref定义了右侧实体如何访问该关系。在左侧，关系被命名为followed，所以在右侧我将使用followers来表示所有左侧用户的列表，即粉丝列表。
+    附加的lazy参数表示这个查询的执行模式，设置为动态模式的查询不会立即执行，直到被调用，这也是我设置用户动态一对多的关系的方式。
+    lazy和backref中的lazy类似，只不过当前的这个是应用于左侧实体，backref中的是应用于右侧实体。 
+    '''
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -197,7 +212,10 @@ t3 s1
 在地区层次关系中，每个地区的上级区域和下属区域仍然是一个地区实例。 
 
 
-
+followers 表是关系的关联表。 此表中的外键都指向用户表中的数据行，因为它将用户关联到用户。 
+该表中的每个记录代表关注者和被关注者的一个关系。 
+即我们可以以关注者为外键，去查询该关注者的关注人，即他对应的所有被关注者。 
+也可以以被关注者为外键，去查询该关注者的粉丝，即他对应的所有关注者。 
 
 
 '''
