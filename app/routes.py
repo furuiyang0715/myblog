@@ -184,17 +184,8 @@ def unfollow(username):
     return redirect(url_for('user', username=username))
 
 
-@app.route("/post", methods=['POST'])
+@app.route('/explore')
 @login_required
-def post():
-    form = PostForm()
-    if form.validate_on_submit():
-        # form 通过检验 说明是 post 请求
-        post = form.post.data
-        p = Post()
-        p.body = post
-        p.user_id = current_user.id
-        db.session.add(p)
-        db.session.commit()
-        flash("博客发表成功")
-        return redirect(url_for('user', username=current_user.username))
+def explore():
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template('index.html', title='Explore', posts=posts)
