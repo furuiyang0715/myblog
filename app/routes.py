@@ -17,8 +17,12 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 @app.route('/index')
 @login_required
 def index():
-    posts = Post.query.all()
-    return render_template('index.html', title='Home', posts=posts)
+    # posts = Post.query.all()
+    form = PostForm()
+    return render_template('index.html', title='Home',
+                           form=form,
+                           # posts=posts,
+                           )
 
 
 @app.route('/login', methods=['GET', 'POST'])

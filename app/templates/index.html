@@ -14,7 +14,7 @@
         <p>{{ form.submit() }}</p>
     </form>
 
-    {% for post in posts %}
+    {% for post in current_user.followed_posts() %}
     <p>
     {{ post.author.username }} says: <b>{{ post.body }}</b>
     </p>
