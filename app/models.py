@@ -82,6 +82,13 @@ class User(UserMixin, db.Model):
         return self.followed.filter(
             followers.c.followed_id == user.id).count() > 0
 
+    def followed_posts(self):
+        """查看当前用户关注者的全部动态"""
+        return Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(    # （2） 的全部博客
+            followers.c.follower_id == self.id).order_by(     # (1）当前用户的全部关注者
+            Post.timestamp.desc())  # (3) 按照时间排序
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
