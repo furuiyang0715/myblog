@@ -89,6 +89,21 @@ class User(UserMixin, db.Model):
             followers.c.follower_id == self.id).order_by(     # (1）当前用户的全部关注者
             Post.timestamp.desc())  # (3) 按照时间排序
 
+    '''关于联合查询功能: Post.query.join(...).filter(...).order_by(...) 
+    这是我为该查询再次设计的join()调用：Post.query.join(followers, (followers.c.followed_id == Post.user_id))
+    我在用户动态表上调用join操作。 第一个参数是followers关联表，第二个参数是join条件。 
+    我的这个调用表达的含义是我希望数据库创建一个临时表，它将用户动态表和关注者表中的数据结合在一起。 数据将根据参数传递的条件进行合并。
+    我使用的条件表示了followers关系表的followed_id字段必须等于用户动态表的user_id字段。 
+    要执行此合并，数据库将从用户动态表（join的左侧）获取每条记录，并追加followers关系表（join的右侧）中的匹配条件的所有记录。 
+    如果followers关系表中有多个记录符合条件，那么用户动态数据行将重复出现。 
+    如果对于一个给定的用户动态，followers关系表中却没有匹配，那么该用户动态的记录不会出现在join操作的结果中。 
+    
+    以上 只是更大查询中的一部分。 
+    
+    
+
+    '''
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
