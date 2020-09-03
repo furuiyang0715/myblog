@@ -7,7 +7,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
 from app.models import User, Post
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -150,12 +150,12 @@ def follow(username):
 
     # 不能关注自身
     if user == current_user:
-        flash('You cannot follow yourself!')
+        flash('不能关注自己!')
         return redirect(url_for('user', username=username))
 
     current_user.follow(user)
     db.session.commit()
-    flash('You are following {}!'.format(username))
+    flash('关注 {} 成功!'.format(username))
     # 关注某人成功后进入该用户首页
     return redirect(url_for('user', username=username))
 
@@ -169,10 +169,26 @@ def unfollow(username):
         return redirect(url_for('index'))
 
     if user == current_user:
-        flash('You cannot unfollow yourself!')
+        flash('不能取关自己!')
         return redirect(url_for('user', username=username))
 
     current_user.unfollow(user)
     db.session.commit()
-    flash('You are not following {}.'.format(username))
+    flash('已成功取关 {}.'.format(username))
     return redirect(url_for('user', username=username))
+
+
+@app.route("/post", methods=['POST'])
+@login_required
+def post():
+    form = PostForm()
+    if form.validate_on_submit():
+        # form 通过检验 说明是 post 请求
+        post = form.post.data
+        p = Post()
+        p.body = post
+        p.user_id = current_user.id
+        db.session.add(p)
+        db.session.commit()
+        flash("博客发表成功")
+        return redirect(url_for('user', username=current_user.username))
