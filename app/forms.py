@@ -52,6 +52,12 @@ class EditProfileForm(FlaskForm):
         self.original_username = original_username
 
     def validate_username(self, username):
+        '''
+        大多数情况下，以后在编辑个人资料时出现用户名重复的提交将被友好地阻止。
+        而是不是一个完美的解决方案，因为当两个或更多进程同时访问数据库时，这可能不起作用。
+        假如存在验证通过的进程A和B都尝试修改用户称为同一个，但稍后进程A尝试重命名时，
+        数据库已被进程B更改，无法重命名为该用户名，会再次引发数据库异常。
+        '''
         if username.data != self.original_username:
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
