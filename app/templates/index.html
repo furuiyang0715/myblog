@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Hi, {{ current_user.username }}!</h1>
+    <h1>你好啊, {{ current_user.username }}!</h1>
 {% if form %}
     <form action="" method="post">
         {{ form.hidden_tag() }}
@@ -15,10 +15,7 @@
         <p>{{ form.submit() }}</p>
     </form>
 {% endif %}
-
     {% for post in current_user.followed_posts() %}
-    <p>
-    {{ post.author.username }} says: <b>{{ post.body }}</b>
-    </p>
+        {% include '_post.html' %}
     {% endfor %}
 {% endblock %}
