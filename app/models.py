@@ -83,11 +83,19 @@ class User(UserMixin, db.Model):
             followers.c.followed_id == user.id).count() > 0
 
     def followed_posts(self):
-        """查看当前用户关注者的全部动态"""
-        return Post.query.join(
-            followers, (followers.c.followed_id == Post.user_id)).filter(    # （2） 的全部博客
-            followers.c.follower_id == self.id).order_by(     # (1）当前用户的全部关注者
-            Post.timestamp.desc())  # (3) 按照时间排序
+        """查看当前用户关注者的全部动态 并且合并自身动态在其中 """
+        followed = Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(
+            followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
+
+    # def followed_posts(self):
+    #     """查看当前用户关注者的全部动态"""
+    #     return Post.query.join(
+    #         followers, (followers.c.followed_id == Post.user_id)).filter(    # （2） 的全部博客
+    #         followers.c.follower_id == self.id).order_by(     # (1）当前用户的全部关注者
+    #         Post.timestamp.desc())  # (3) 按照时间排序
 
     '''关于联合查询功能: Post.query.join(...).filter(...).order_by(...) 
     这是我为该查询再次设计的join()调用：Post.query.join(followers, (followers.c.followed_id == Post.user_id))
