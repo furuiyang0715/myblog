@@ -62,6 +62,26 @@ class User(UserMixin, db.Model):
         digest = md5(self.email.lower().encode('utf-8')).hexdigest()
         return 'https://www.gravatar.com/avatar/{}?d=identicon&s={}'.format(digest, size)
 
+    def follow(self, user):
+        """关注用户"""
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        """取消关注"""
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        """
+        判断当前用户是否已经关注指定用户
+        在当前用户的关注人中筛选 是否已经关注了此人
+        :param user:
+        :return:
+        """
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -217,5 +237,10 @@ followers 表是关系的关联表。 此表中的外键都指向用户表中的
 即我们可以以关注者为外键，去查询该关注者的关注人，即他对应的所有被关注者。 
 也可以以被关注者为外键，去查询该关注者的粉丝，即他对应的所有关注者。 
 
+'''
+
+'''关注以及取消的实现: 
+user1.followed.append(user2) 
+user1.followed.remove(user2) 
 
 '''
