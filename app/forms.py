@@ -62,3 +62,10 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=self.username.data).first()
             if user is not None:
                 raise ValidationError('此用户名已经存在 ~~')
+
+
+class PostForm(FlaskForm):
+    """发送用户动态的表单 """
+    post = TextAreaField('说点什么吧 ~~ ', validators=[
+        DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField('发表')
