@@ -7,6 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from app import db, login
 
 
+# 创建关联表
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id')),
+)
+
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -22,6 +29,13 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     # 用户上一次访问该网站的时间
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+
+    followed = db.relationship(
+        'User',
+        secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -144,6 +158,46 @@ class User(UserMixin, db.Model):
 from hashlib import md5
 url = 'https://www.gravatar.com/avatar/' + md5(b'ruiyang0715@gmail.com').hexdigest()
 print(url) 
+'''
+
+'''关于关联表: 
+(1) 我想为每个用户维护一个“粉丝”用户列表和“关注”用户列表。 不幸的是，关系型数据库没有列表类型的字段来保存它们，
+那么只能通过表的现有字段和他们之间的关系来实现。 
+
+(2) 数据库已有一个代表用户的表，所以剩下的就是如何正确地组织他们之间的关注与被关注的关系。 
+
+(3) 关于一对多关系: 
+用户和用户动态通过这个关系来关联。其中，一个用户拥有多条用户动态，而一条用户动态属于一个用户（作者）。
+数据库在多的这方使用了一个外键以表示一对多关系。在上面的一对多关系中，外键是post表的user_id字段，
+这个字段将用户的每条动态都与其作者关联了起来。 
+
+
+(4) 关于多对多关系
+多对多关系会更加复杂，举个例子，数据库中有students表和teachers表，一名学生学习多位老师的课程，一位老师教授多名学生。
+这就像两个重叠的一对多关系。
+
+对于这种类型的关系，我想要能够查询数据库来获取教授给定学生的教师的列表，以及某个教师课程中的学生的列表。 
+想要在关系型数据库中梳理这样的关系并非轻易而举，因为无法通过向现有表添加外键来完成此操作。 
+
+这时我们需要的是一个关联表: 其中存在两个字段：老师 t 以及学生 s. 
+存在以下几种关系: 
+t1 s1
+t1 s2 
+t1 s3 
+t2 s1 
+t3 s1 
+.. 
+那么查询 t1 的老师即为 s1 s2 s3 
+查询 s1 的学生即为 t1, t2, t3 .. 
+
+(5) 关于多对多关系中的自关联: 
+在(4) 的多对多关系中，存在着两个实体：即老师和学生。 
+但有时在多对多关系中只存在一个实体，称为自关联。 
+举例来说, 在微博中一个用户有多个关注，同时有多个粉丝。 关注和粉丝的实体都是用户自身。 
+在地区层次关系中，每个地区的上级区域和下属区域仍然是一个地区实例。 
+
+
+
 
 
 '''
