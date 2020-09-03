@@ -13,16 +13,18 @@ from app.models import User, Post
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=["GET", "POST"])
+@app.route('/index', methods=["GET", "POST"])
 @login_required
 def index():
-    # posts = Post.query.all()
     form = PostForm()
-    return render_template('index.html', title='Home',
-                           form=form,
-                           # posts=posts,
-                           )
+    if form.validate_on_submit():
+        post = Post(body=form.post.data, author=current_user)
+        db.session.add(post)
+        db.session.commit()
+        flash('Your post is now live!')
+        return redirect(url_for('index'))
+    return render_template('index.html', title='Home', form=form)
 
 
 @app.route('/login', methods=['GET', 'POST'])
