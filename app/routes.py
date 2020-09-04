@@ -17,7 +17,16 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 @app.route('/index', methods=["GET", "POST"])
 @login_required
 def index():
-    posts = current_user.followed_posts()
+    # posts = current_user.followed_posts()
+    # 关于主页用户动态的分类
+    # 如果一个用户有成千上万条关注的用户动态时，会发生什么？你可以想象得到，管理这么大的用户动态列表将会变得相当缓慢和低效。
+    # 为了解决这个问题，我会将用户动态进行分页。这意味着一开始显示的只是所有用户动态的一部分，并提供链接来访问其余的用户动态。
+    # Flask-SQLAlchemy的paginate()方法原生就支持分页。例如，我想要获取用户关注的前20个动态，我可以将all()结束调用替换成如下的查询：
+    # 三个参数：从 1 开始的页码；每个展示的个数;
+    # 错误处理布尔标记，如果是True，当请求范围超出已知范围时自动引发404错误。如果是False，则会返回一个空列表。
+
+    page = request.args.get('page', 1, type=int)    # 因为分页 要额外获取一个参数 表名当前是第几页
+    posts = current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False).items
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
@@ -188,5 +197,9 @@ def unfollow(username):
 @app.route('/explore')
 @login_required
 def explore():
-    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    # posts = Post.query.order_by(Post.timestamp.desc()).all()
+
+    page = request.args.get('page', 1, type=int)  # 因为分页 要额外获取一个参数 表名当前是第几页
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False).items
+
     return render_template('index.html', title='Explore', posts=posts)

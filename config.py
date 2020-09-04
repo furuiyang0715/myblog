@@ -19,6 +19,8 @@ class Config(object):
         '15626046299@163.com',
     ]
 
+    POSTS_PER_PAGE = 10  # 配置项 表示每页的配置列表长度
+
     # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     # EMAIL_HOST = 'smtp.163.com'
     # EMAIL_PORT = 25
