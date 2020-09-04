@@ -15,3 +15,11 @@ msg.html = '<h1>HTML body</h1>'
 mail.send(msg)
 
 '''
+
+'''测试发送加密邮件
+import jwt
+token = jwt.encode({'a': 'b'}, 'my-secret', algorithm='HS256')
+print(token) 
+print(jwt.decode(token, 'my-secret', algorithms=['HS256'])) 
+
+'''
