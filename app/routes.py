@@ -7,7 +7,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app, db
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm
 from app.models import User, Post
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -237,4 +237,10 @@ def explore():
 @app.route("/reset_password_request")
 def reset_password_request():
 
-    return "重置密码"
+    form = ResetPasswordRequestForm()
+
+    return render_template("reset_password_request.html",
+                           form=form,
+                           title='重置密码',
+                           )
+
