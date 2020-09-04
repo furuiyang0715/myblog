@@ -1,11 +1,12 @@
 from hashlib import md5
 from datetime import datetime
+from time import time
 
+import jwt
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from app import db, login
-
+from app import db, login, app
 
 # 创建关联表
 followers = db.Table('followers',
@@ -90,13 +91,6 @@ class User(UserMixin, db.Model):
         own = Post.query.filter_by(user_id=self.id)
         return followed.union(own).order_by(Post.timestamp.desc())
 
-    # def followed_posts(self):
-    #     """查看当前用户关注者的全部动态"""
-    #     return Post.query.join(
-    #         followers, (followers.c.followed_id == Post.user_id)).filter(    # （2） 的全部博客
-    #         followers.c.follower_id == self.id).order_by(     # (1）当前用户的全部关注者
-    #         Post.timestamp.desc())  # (3) 按照时间排序
-
     '''关于联合查询功能: Post.query.join(...).filter(...).order_by(...) 
     这是我为该查询再次设计的join()调用：Post.query.join(followers, (followers.c.followed_id == Post.user_id))
     我在用户动态表上调用join操作。 第一个参数是followers关联表，第二个参数是join条件。 
@@ -118,6 +112,22 @@ class User(UserMixin, db.Model):
     
     (2) 第二种方法是通过创建第二个查询返回用户自己的动态，然后使用“union”操作将两个查询合并为一个查询。 
     '''
+
+    def get_reset_password_token(self, expires_in=600):
+        """使用用户的id 并且设置 1 min 的过期时间 生成重置密码的令牌"""
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
+
+    @staticmethod
+    def verify_reset_password_token(token):
+        """解密出用户对象或者None进行返回"""
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'],
+                            algorithms=['HS256'])['reset_password']
+        except:
+            return
+        return User.query.get(id)
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
