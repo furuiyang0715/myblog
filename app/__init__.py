@@ -7,6 +7,7 @@ from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
+from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 
 from config import Config
@@ -35,6 +36,7 @@ mail = Mail(app)
 
 bootstrap = Bootstrap(app)
 
+moment = Moment(app)
 
 # 为 Flask 的日志对象 app.logger 添加了一个 SMTPHandler 的实例：
 # 如您所见，仅当应用未以调试模式运行，并配置中存在邮件服务器时，我才会启用电子邮件日志记录器。
