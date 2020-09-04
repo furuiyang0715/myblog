@@ -26,7 +26,7 @@ def index():
     # 错误处理布尔标记，如果是True，当请求范围超出已知范围时自动引发404错误。如果是False，则会返回一个空列表。
 
     page = request.args.get('page', 1, type=int)    # 因为分页 要额外获取一个参数 表名当前是第几页
-    posts = current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False).items
+    posts = current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False)
 
     # 渲染出上一页和下一页的 url 链接
     next_url = url_for('index', page=posts.next_num) if posts.has_next else None
@@ -39,7 +39,10 @@ def index():
         db.session.commit()
         flash('Your post is now live!')
         return redirect(url_for('index'))
-    return render_template('index.html', title='Home', form=form, posts=posts,
+    return render_template('index.html',
+                           title='Home',
+                           form=form,
+                           posts=posts.items,
                            next_url=next_url,
                            prev_url=prev_url,
                            )
@@ -208,11 +211,12 @@ def explore():
     # posts = Post.query.order_by(Post.timestamp.desc()).all()
 
     page = request.args.get('page', 1, type=int)  # 因为分页 要额外获取一个参数 表名当前是第几页
-    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False).items
-
+    posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False)
     next_url = url_for('explore', page=posts.next_num) if posts.has_next else None
     prev_url = url_for('explore', page=posts.prev_num) if posts.has_prev else None
 
-    return render_template('index.html', title='Explore', posts=posts,
-                           next_url=next_url, prev_url=prev_url,
-                           )
+    return render_template('index.html',
+                           title='Explore',
+                           posts=posts.items,
+                           next_url=next_url,
+                           prev_url=prev_url)
