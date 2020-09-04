@@ -8,7 +8,8 @@ from werkzeug.utils import redirect
 
 from app import app, db
 from app.email import send_email, send_password_reset_email
-from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm
+from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm, \
+    ResetPasswordForm
 from app.models import User, Post
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -247,11 +248,22 @@ def reset_password_request():
             send_password_reset_email(user)
         flash('请检查该邮箱是否是已注册邮箱')
         return redirect(url_for('login'))
-    return render_template('reset_password_request.html', title='重置密码', form=form)
+    return render_template('reset_password_request.html', title='请求重置密码', form=form)
 
 
-@app.route('/reset_password')
+@app.route('/reset_password', methods=["GET", "POST"])
 def reset_password():
-
-
-    pass
+    token = request.args.get("token")
+    user = User.verify_reset_password_token(token)
+    form = ResetPasswordForm()
+    if form.validate_on_submit():
+        password = form.password.data
+        if user:
+            user.password = password
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for("login"))
+        else:
+            flash("当前链接已经过期")
+            return redirect(url_for("login"))
+    return render_template("reset_password.html", title='重置密码', form=form)
