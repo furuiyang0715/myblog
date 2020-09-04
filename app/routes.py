@@ -27,6 +27,11 @@ def index():
 
     page = request.args.get('page', 1, type=int)    # 因为分页 要额外获取一个参数 表名当前是第几页
     posts = current_user.followed_posts().paginate(page, app.config['POSTS_PER_PAGE'], False).items
+
+    # 渲染出上一页和下一页的 url 链接
+    next_url = url_for('index', page=posts.next_num) if posts.has_next else None
+    prev_url = url_for('index', page=posts.prev_num) if posts.has_prev else None
+
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
@@ -34,7 +39,10 @@ def index():
         db.session.commit()
         flash('Your post is now live!')
         return redirect(url_for('index'))
-    return render_template('index.html', title='Home', form=form, posts=posts)
+    return render_template('index.html', title='Home', form=form, posts=posts,
+                           next_url=next_url,
+                           prev_url=prev_url,
+                           )
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -202,4 +210,9 @@ def explore():
     page = request.args.get('page', 1, type=int)  # 因为分页 要额外获取一个参数 表名当前是第几页
     posts = Post.query.order_by(Post.timestamp.desc()).paginate(page, app.config['POSTS_PER_PAGE'], False).items
 
-    return render_template('index.html', title='Explore', posts=posts)
+    next_url = url_for('explore', page=posts.next_num) if posts.has_next else None
+    prev_url = url_for('explore', page=posts.prev_num) if posts.has_prev else None
+
+    return render_template('index.html', title='Explore', posts=posts,
+                           next_url=next_url, prev_url=prev_url,
+                           )
