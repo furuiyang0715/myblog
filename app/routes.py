@@ -235,23 +235,35 @@ def explore():
                            prev_url=prev_url)
 
 
-@app.route("/reset_password_request", methods=["GET", "POST"])
+# @app.route("/reset_password_request", methods=["GET", "POST"])
+# def reset_password_request():
+#     form = ResetPasswordRequestForm()
+#     if form.validate_on_submit():
+#         email = form.email.data
+#         send_email("重置密码", app.config['ADMINS'][0], [email, ], '重置密码', '重置密码')
+#         return redirect(url_for("index"))
+#     return render_template("reset_password_request.html",
+#                            form=form,
+#                            title='重置密码')
+
+
+@app.route('/reset_password_request', methods=['GET', 'POST'])
 def reset_password_request():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
-        email = form.email.data
-        send_email("重置密码", app.config['ADMINS'][0], [email, ], '重置密码', '重置密码')
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            pass
+            # send_password_reset_email(user)
+        flash('请检查该邮箱是否是已注册邮箱')
+        return redirect(url_for('登录'))
+    return render_template('reset_password_request.html', title='重置密码', form=form)
 
-        # send_email(subject, sender, recipients, text_body, html_body)
 
-        # msg = Message('test subject', sender=app.config['ADMINS'][0], recipients=['2564493603@qq.com'])
-        # msg.body = 'text body'
-        # msg.html = '<h1>HTML body</h1>'
-        # mail.send(msg)
+@app.route("/active")
+def active():
 
-        return redirect(url_for("index"))
-    return render_template("reset_password_request.html",
-                           form=form,
-                           title='重置密码',
-                           )
-
+    pass
