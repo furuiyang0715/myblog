@@ -7,6 +7,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app, db
+from app.email import send_email
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm
 from app.models import User, Post
 
@@ -234,11 +235,21 @@ def explore():
                            prev_url=prev_url)
 
 
-@app.route("/reset_password_request")
+@app.route("/reset_password_request", methods=["GET", "POST"])
 def reset_password_request():
-
     form = ResetPasswordRequestForm()
+    if form.validate_on_submit():
+        email = form.email.data
+        send_email("重置密码", app.config['ADMINS'][0], [email, ], '重置密码', '重置密码')
 
+        # send_email(subject, sender, recipients, text_body, html_body)
+
+        # msg = Message('test subject', sender=app.config['ADMINS'][0], recipients=['2564493603@qq.com'])
+        # msg.body = 'text body'
+        # msg.html = '<h1>HTML body</h1>'
+        # mail.send(msg)
+
+        return redirect(url_for("index"))
     return render_template("reset_password_request.html",
                            form=form,
                            title='重置密码',
