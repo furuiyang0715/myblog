@@ -7,7 +7,7 @@ from werkzeug.urls import url_parse
 from werkzeug.utils import redirect
 
 from app import app, db
-from app.email import send_email
+from app.email import send_email, send_password_reset_email
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, PostForm, ResetPasswordRequestForm
 from app.models import User, Post
 
@@ -256,8 +256,7 @@ def reset_password_request():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            pass
-            # send_password_reset_email(user)
+            send_password_reset_email(user)
         flash('请检查该邮箱是否是已注册邮箱')
         return redirect(url_for('登录'))
     return render_template('reset_password_request.html', title='重置密码', form=form)
