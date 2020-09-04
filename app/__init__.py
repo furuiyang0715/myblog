@@ -3,6 +3,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from flask import Flask
+from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
@@ -31,6 +32,8 @@ login.login_view = 'login'
 
 # 发送邮件的配置
 mail = Mail(app)
+
+bootstrap = Bootstrap(app)
 
 
 # 为 Flask 的日志对象 app.logger 添加了一个 SMTPHandler 的实例：

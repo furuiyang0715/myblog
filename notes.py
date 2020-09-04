@@ -34,3 +34,8 @@ mail.send()方法需要访问电子邮件服务器的配置值，而这必须通
 
 
 '''
+
+'''搭配前端框架使用: 
+(1) 安装: pip install flask-bootstrap 
+
+'''
