@@ -17,6 +17,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 @app.route('/index', methods=["GET", "POST"])
 @login_required
 def index():
+    posts = current_user.followed_posts()
     form = PostForm()
     if form.validate_on_submit():
         post = Post(body=form.post.data, author=current_user)
@@ -24,7 +25,7 @@ def index():
         db.session.commit()
         flash('Your post is now live!')
         return redirect(url_for('index'))
-    return render_template('index.html', title='Home', form=form)
+    return render_template('index.html', title='Home', form=form, posts=posts)
 
 
 @app.route('/login', methods=['GET', 'POST'])
