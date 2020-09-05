@@ -21,6 +21,8 @@ class Config(object):
 
     POSTS_PER_PAGE = 4  # 配置项 表示每页的配置列表长度
 
+    LANGUAGES = ['en', 'es']   # 配置国际化支持的语言列表
+
 
 # if __name__ == '__main__':
 #     print(Config().MAIL_PASSWORD)
