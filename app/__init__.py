@@ -2,7 +2,7 @@ import logging
 import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
-from flask import Flask
+from flask import Flask, request
 from flask_babel import Babel
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
@@ -76,6 +76,12 @@ if not app.debug:
 
 # 这样写是为了解决循环引用的问题
 from app import routes, models, errors
+
+
+# 为每个请求调用装饰器函数以选择用于该请求的语言
+@babel.localeselector
+def get_locale():
+    return request.accept_languages.best_match(app.config['LANGUAGES'])
 
 
 '''使用Python的SMTP调试服务器。
