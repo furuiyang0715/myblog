@@ -3,6 +3,7 @@ import os
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 from flask import Flask
+from flask_babel import Babel
 from flask_bootstrap import Bootstrap
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -37,6 +38,9 @@ mail = Mail(app)
 bootstrap = Bootstrap(app)
 
 moment = Moment(app)
+
+# 关于flask 的国际化翻译配置
+babel = Babel(app)
 
 # 为 Flask 的日志对象 app.logger 添加了一个 SMTPHandler 的实例：
 # 如您所见，仅当应用未以调试模式运行，并配置中存在邮件服务器时，我才会启用电子邮件日志记录器。
